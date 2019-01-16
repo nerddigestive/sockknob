@@ -1,24 +1,29 @@
-from flask import url_for, redirect, request, render_template, flash, g, session, status
-from app import app, lm
+import time
+
+from flask import url_for, request, render_template, jsonify
+from app import app
 
 
-is_sock_on_door = False
+is_sock_on_door = True
 sock_set_time = time.time()
 
 
 @app.route('/')
 def index():
-	return render_template('index.html')
+	if is_sock_on_door:
+		return render_template('on.html')
+	else:
+		return render_template('off.html')
 
 
-@app.route('/api/sock/on', method=['POST'])
+@app.route('/api/sock/on', methods=['POST'])
 def sock_on():
 	is_sock_on_door = True
 	sock_set_time = time.time()
 	return get_state()
 
 
-@app.route('/api/sock/off', method['POST'])
+@app.route('/api/sock/off', methods=['POST'])
 def sock_off():
 	is_sock_on_door = False
 	sock_set_time = time.time()
@@ -27,8 +32,8 @@ def sock_off():
 
 @app.route('/api/sock', methods=['GET'])
 def get_state():
-	return {'state': is_sock_on_door,
-			'duration': time.time() - sock_set_time}
+	return jsonify({'state': is_sock_on_door,
+			 		'duration': time.time() - sock_set_time})
 
 
 @app.route('/api/sock', methods=['POST'])
@@ -40,7 +45,7 @@ def set_sock():
 		assert type(sock_state) is bool
 	except AssertionError, e:
 		print("HTTP-400: Attempt to set invalid sock state.")
-		return {'error': 'Attempt to set invalid sock state.'}, status.HTTP_400_BAD_REQUEST
+		return jsonify({'error': 'Attempt to set invalid sock state.'}), status.HTTP_400_BAD_REQUEST
 	
 	is_sock_on_door = sock_state
 	sock_set_time = time.time()
