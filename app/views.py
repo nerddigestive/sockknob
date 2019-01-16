@@ -4,7 +4,7 @@ from flask import url_for, request, render_template, jsonify
 from app import app
 
 
-is_sock_on_door = True
+is_sock_on_door = False
 sock_set_time = time.time()
 
 
