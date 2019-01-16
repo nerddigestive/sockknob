@@ -5,7 +5,7 @@ from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 
-config_state = os.environ.get('CONFIG_MODE')
+config_state = os.environ.get('SOCKKNOB_CONFIG_MODE')
 
 if config_state == 'DEV':
 	app.config.from_object('app.configuration.DevelopmentConfig')
