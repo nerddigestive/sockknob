@@ -4,13 +4,13 @@ from flask import url_for, request, render_template, jsonify
 from app import app
 
 
-is_sock_on_door = False
-sock_set_time = time.time()
+app.is_sock_on_door = False
+app.sock_set_time = time.time()
 
 
 @app.route('/')
 def index():
-	if is_sock_on_door:
+	if app.is_sock_on_door:
 		return render_template('on.html')
 	else:
 		return render_template('off.html')
@@ -18,22 +18,22 @@ def index():
 
 @app.route('/api/sock/on', methods=['POST'])
 def sock_on():
-	is_sock_on_door = True
-	sock_set_time = time.time()
+	app.is_sock_on_door = True
+	app.sock_set_time = time.time()
 	return get_state()
 
 
 @app.route('/api/sock/off', methods=['POST'])
 def sock_off():
-	is_sock_on_door = False
-	sock_set_time = time.time()
+	app.is_sock_on_door = False
+	app.sock_set_time = time.time()
 	return get_state()
 
 
 @app.route('/api/sock', methods=['GET'])
 def get_state():
-	return jsonify({'state': is_sock_on_door,
-			 		'duration': time.time() - sock_set_time})
+	return jsonify({'state': app.is_sock_on_door,
+			 		'duration': time.time() - app.sock_set_time})
 
 
 @app.route('/api/sock', methods=['POST'])
@@ -47,10 +47,10 @@ def set_sock():
 		print("HTTP-400: Attempt to set invalid sock state.")
 		return jsonify({'error': 'Attempt to set invalid sock state.'}), status.HTTP_400_BAD_REQUEST
 	
-	is_sock_on_door = sock_state
-	sock_set_time = time.time()
+	app.is_sock_on_door = sock_state
+	app.sock_set_time = time.time()
 
-	if is_sock_on_door:
+	if app.is_sock_on_door:
 		print("Sock is now on the door handle...")
 	else:
 		print("Sock has now been removed from the door handle...")
